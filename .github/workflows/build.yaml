@@ -1,0 +1,48 @@
+env:
+  BUILDROOT_VERSION: ${{ inputs.BUILDROOT_VERSION }}
+jobs:
+  amd64:
+    if: always()
+    name: amd64
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Building
+        run: |
+          make ARCH=amd64
+      - name: Uploading
+        uses: actions/upload-artifact@v4
+        with:
+          name: amd64
+          path: dist/*
+    timeout-minutes: 360
+  arm64:
+    if: always()
+    name: arm64
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Building
+        run: |
+          make ARCH=arm64
+      - name: Uploading
+        uses: actions/upload-artifact@v4
+        with:
+          name: arm64
+          path: dist/*
+    timeout-minutes: 360
+name: Build
+on:
+  workflow_dispatch:
+    inputs:
+      BUILDROOT_VERSION:
+        default: 2025.02.4
+        description: https://buildroot.org/news.html
+        required: true
+        type: string
